@@ -16,4 +16,4 @@ COPY login.py ./app
 COPY .env .
 
 # Run script
-CMD ["python", "app/login.py"]
+CMD ["python", "login.py"]
