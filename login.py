@@ -1,5 +1,7 @@
 import time
 import os
+import tempfile
+import shutil
 from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -21,9 +23,9 @@ MEGA_API = os.environ.get("MEGA_API", "")
 chrome_options = Options()
 chrome_options.binary_location = CHROME_PATH
 chrome_options.add_argument("--headless")
-chrome_options.add_argument("--no-sandbox")  
-chrome_options.add_argument("--disable-dev-shm-usage")  
-chrome_options.add_argument("--disable-gpu")  
+chrome_options.add_argument("--no-sandbox")
+chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--remote-debugging-port=9222")
 chrome_options.add_argument("--single-process")
 chrome_options.add_argument("--disable-extensions")
@@ -32,6 +34,9 @@ service = Service(CHROMEDRIVER_PATH)
 
 def login():
     """Logs in to MEGA and verifies success."""
+    user_data_dir = tempfile.mkdtemp()
+    chrome_options.add_argument(f"--user-data-dir={user_data_dir}")
+
     driver = webdriver.Chrome(service=service, options=chrome_options)
     try:
         driver.get("https://mega.nz/login")
@@ -61,6 +66,7 @@ def login():
 
     finally:
         driver.quit()
+        shutil.rmtree(user_data_dir, ignore_errors=True)
         print("WebDriver session ended.")
 
 login()
