@@ -1,9 +1,10 @@
-FROM hrishi2861/megalogin:latest
+FROM python:3.11-slim
 WORKDIR /app
-
 COPY requirements.txt .
-RUN uv venv
-RUN uv pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+RUN apt-get update && apt-get install -y wget gnupg curl && \
+    playwright install --with-deps
 
-COPY . .
-CMD ["bash", "start.sh"]
+COPY .env .
+
+CMD ["python", "login.py"]
